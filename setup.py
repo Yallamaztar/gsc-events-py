@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gsc_events",
-    version="0.1.0",
+    version="0.1.1",
     author="budiworld",
     author_email="budi.world@yahoo.com",
     description="Python library for capturing and handling game events in Plutonium T6",
