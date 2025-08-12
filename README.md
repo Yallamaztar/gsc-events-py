@@ -66,8 +66,8 @@ def on_join_spectators(player: str):
     print(f"{player} Joined spectators")
 
 @client.on("player_killed")
-def on_killed(player: str, attacker: str, reason: str):
-    print(f"{player} was killed by {attacker} with {reason}")
+def on_killed(player: str, attacker: str, reason: str, weapon: str, hit_location: str):
+    print(f"{player} was killed by {attacker} with {weapon} | location: {hit_location} & reason: {reason}")
 
 @client.on("player_disconnected")
 def on_disconnect(player: str):

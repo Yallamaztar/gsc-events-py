@@ -47,7 +47,7 @@ onJoinedSpectators() {
 }
 
 onPlayerKilled(einflictor, attacker, idamage, smeansofdeath, sweapon, vdir, shitloc, psoffsettime, deathanimduration) {
-    thread call_event("player_killed", self.name, attacker.name, smeansofdeath, shitloc, maps\mp\gametypes\_globallogic_utils::isheadshot(sweapon, shitloc, smeansofdeath, einflictor));
+    thread call_event("player_killed", self.name, attacker.name, smeansofdeath, sweapon, shitloc);
 }
 
 onPlayerDisconnected() {
