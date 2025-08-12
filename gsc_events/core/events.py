@@ -8,12 +8,12 @@ def parse_line(line: str) -> Optional[Tuple[str, List]]:
         event = data.get("event")
         args  = data.get("args", [])
         if not event:
-            return None
+            return
         return event, args
     
     except json.JSONDecodeError:
         print("[gsc-events] json decode error")
-        return None
+        return
     
 def emit_all(
     handlers: Dict[str, List[Callable]],

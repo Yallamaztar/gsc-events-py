@@ -14,7 +14,7 @@ class GSCClient:
         self._events: DefaultDict[str, List] = defaultdict(list)
         self._positions: Dict[Path, int] = {}
 
-    def delete_event_logs(self) -> None:
+    def clear_events(self) -> None:
         for log in os.listdir(self.filepath):
             if log.startswith("event_") and log.endswith(".jsonl"):
                 path = os.path.join(self.filepath, log)
