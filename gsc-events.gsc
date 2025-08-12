@@ -57,7 +57,7 @@ onPlayerDisconnected() {
 onWeaponChange() {
     for(;;) {
         self waittill( "weapon_change", weapon );
-        thread call_event("player_say", self.name, weapon);
+        thread call_event("weapon_change", self.name, weapon);
     }
 }
 
