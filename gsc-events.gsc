@@ -7,8 +7,7 @@ init() {
     level thread onKillcam();
     level thread onKillcamEnd();
 
-    level thread onGameEnded();
-
+    level.onplayerdisconnect = ::onPlayerDisconnected;
     level.onplayerkilled = ::onPlayerKilled;
 
 }
@@ -18,9 +17,11 @@ onPlayerConnected() {
         level waittill( "connected", player );
         thread call_event("player_connected", player.name);
 
+        player thread onJoinedSpectators();
         player thread onPlayerSpawned();
+        player thread onWeaponChange();
         player thread onPlayerDeath();
-        player thread onPlayerDisconnect();
+        player thread onJoinedTeam();
     }
 }
 
@@ -38,14 +39,25 @@ onPlayerDeath() {
     }
 }
 
-onPlayerKilled(einflictor, attacker, idamage, smeansofdeath, sweapon, vdir, shitloc, psoffsettime, deathanimduration) {
-    thread call_event("player_killed", self.name, attacker.name, smeansofdeath);
+onJoinedSpectators() {
+    for (;;) {
+        self waittill( "joined_spectators" );
+        thread call_event("joined_spectators", self.name);
+    }
 }
 
-onPlayerDisconnect() {
+onPlayerKilled(einflictor, attacker, idamage, smeansofdeath, sweapon, vdir, shitloc, psoffsettime, deathanimduration) {
+    thread call_event("player_killed", self.name, attacker.name, smeansofdeath, shitloc, maps\mp\gametypes\_globallogic_utils::isheadshot(sweapon, shitloc, smeansofdeath, einflictor));
+}
+
+onPlayerDisconnected() {
+    thread call_event("player_disconnected", self.name);
+}
+
+onWeaponChange() {
     for(;;) {
-        self waittill( "disconnect" );
-        thread call_event("player_disconnect", self.name);
+        self waittill( "weapon_change", weapon );
+        thread call_event("player_say", self.name, weapon);
     }
 }
 
@@ -56,13 +68,25 @@ onPlayerSay() {
     }
 }
 
+onMenuResponse() {
+    for (;;) {
+        self waittill( "menuresponse", menu, response );
+        thread call_event("menu_response", self.name, menu, response);
+    }
+}
+
+onJoinedTeam() {
+    for(;;) {
+        self waittill( "joined_team" );
+        thread call_event("joined_team", self.name, self.pers["team"]);
+    }
+}
+
+
 onKillcam() {
     for(;;) {
-        if (level.finalkillcam_winner != undefined) {
-            thread call_event("killcam");
-            wait 15;
-        }
-        wait .05;
+        level waittill( "play_final_killcam" );
+        thread call_event("killcam_start");
     }
 }
 
@@ -73,7 +97,7 @@ onKillcamEnd() {
     }
 }
 
-call_event( event, arg1, arg2, arg3 ) {
+call_event( event, arg1, arg2, arg3, arg4, arg5 ) {
     if (arg1 == undefined || arg1 == "" ) {
         event_log = "{ \"event\": \"" + event + "\" }";
     } 
@@ -86,8 +110,16 @@ call_event( event, arg1, arg2, arg3 ) {
         event_log = "{ \"event\": \"" + event + "\", \"args\": [\"" + arg1 + "\", \"" + arg2 + "\"] }";
     }
 
-    else {
+    else if (arg4 == undefined || arg4 == "" ) {
         event_log = "{ \"event\": \"" + event + "\", \"args\": [\"" + arg1 + "\", \"" + arg2 + "\", \"" + arg3 + "\"] }";
+    }
+
+    else if (arg5 == undefined || arg5 == "" ) {
+        event_log = "{ \"event\": \"" + event + "\", \"args\": [\"" + arg1 + "\", \"" + arg2 + "\", \"" + arg3 + "\", \"" + arg4 + "\"] }";
+    }
+
+    else {
+        event_log = "{ \"event\": \"" + event + "\", \"args\": [\"" + arg1 + "\", \"" + arg2 + "\", \"" + arg3 + "\", \"" + arg4 + "\", \"" + arg5 + "\"] }";
     }
     
     file = fs_fopen("event_" + event + ".jsonl", "append");
